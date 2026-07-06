@@ -18,14 +18,14 @@ module "vpc" {
 
   # --- Cost-saving setting for now ---
   enable_nat_gateway = true
-  single_nat_gateway = true   # 1 NAT shared across all AZs (cheap, testing phase)
+  single_nat_gateway = true # 1 NAT shared across all AZs (cheap, testing phase)
   # For production later, replace above two lines with:
   # single_nat_gateway     = false
   # one_nat_gateway_per_az = true
 
   create_database_subnet_group = true
-  enable_dns_hostnames          = true
-  enable_dns_support             = true
+  enable_dns_hostnames         = true
+  enable_dns_support           = true
 
   # Required tags for EKS to auto-discover subnets later
   public_subnet_tags = {
