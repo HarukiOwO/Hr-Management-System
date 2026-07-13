@@ -115,7 +115,7 @@ To use a real MySQL server instead of H2:
      ```
    - **OR using Docker in one command:**
      ```bash
-     docker run --name hrms-mysql -p 3306:3306 -e MYSQL_DATABASE=hrms_db -e MYSQL_ROOT_PASSWORD=hussain@123 -d mysql:8.0
+     docker run --name hrms-mysql -p 3306:3306 -e MYSQL_DATABASE=hrms_db -e MYSQL_ROOT_PASSWORD=${DB_PASSWORD:-change_me_in_env} -d mysql:8.0
      ```
 3. **Run the project:**
    ```bash

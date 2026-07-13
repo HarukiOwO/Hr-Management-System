@@ -34,9 +34,9 @@ mvn spring-boot:run
 #### Option B: Run with MySQL Server
 If you prefer running against a live MySQL server (`localhost:3306`):
 1. In `backend/hrms/src/main/resources/application.properties`, comment out `# spring.profiles.active=local`.
-2. Ensure MySQL is running with database `hrms_db` (`root` / `hussain@123`), or spin one up using Docker:
+2. Ensure MySQL is running with database `hrms_db` (`root` / `your_db_password`), or spin one up using Docker with an environment variable placeholder:
    ```bash
-   docker run --name hrms-mysql -p 3306:3306 -e MYSQL_DATABASE=hrms_db -e MYSQL_ROOT_PASSWORD=hussain@123 -d mysql:8.0
+   docker run --name hrms-mysql -p 3306:3306 -e MYSQL_DATABASE=hrms_db -e MYSQL_ROOT_PASSWORD=${DB_PASSWORD:-change_me_in_env} -d mysql:8.0
    ```
 3. Run the application:
    ```bash

@@ -44,7 +44,7 @@ EXPOSE 8080
 ENV PORT=8080 \
     SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/hrms_db \
     SPRING_DATASOURCE_USERNAME=root \
-    SPRING_DATASOURCE_PASSWORD=hussain@123 \
+    SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-change_me_in_env} \
     JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
 
 # Run the Spring Boot application
