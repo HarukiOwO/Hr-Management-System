@@ -16,47 +16,50 @@ Welcome to the comprehensive technical documentation for the **HR Management Sys
 
 ## 1. System Overview & High-Level Architecture
 
-The HRMS application is built using a modern **Three-Tier Microservices/Container Architecture**:
-* **Presentation Layer (Frontend):** Next.js 14 (React) with Tailwind CSS, communicating via Axios.
+The HRMS application supports both **Enterprise Cloud Deployment (AWS Option 2 Architecture)** and **Local Multi-Container Development**:
+* **Presentation Layer (Frontend):** Next.js 16 (React 19) with Tailwind CSS v4 (`output: export` static HTML/JS for zero-server CDN edge delivery).
+* **Edge Reverse Proxy Layer:** AWS CloudFront CDN with `/api/*` ordered caching behavior routing directly to Nginx Alpine on EC2 (`t3.micro`).
 * **Application Layer (Backend):** Java 17 with Spring Boot 3.2.5, Spring Security (JWT), and Hibernate JPA.
-* **Data Persistence Layer (Database):** MySQL 8.0 community server.
+* **Data Persistence Layer (Database):** TiDB Cloud Serverless MySQL (`$0/mo Free Tier` in production) or containerized MySQL 8.0 (`docker-compose-test.yml` locally).
 
+### Production Cloud Topology (`AWS S3 + CloudFront + EC2 + TiDB`)
 ```mermaid
 graph TD
-    subgraph Host Machine / Browser
-        Client[User Browser / Client]
+    subgraph Global Edge
+        Client[Browser / Client Device]
     end
 
-    subgraph Docker Bridge Network: hrms-network
-        subgraph Next.js Frontend Container
-            Frontend[hrms-frontend:3000<br/>Next.js 14 / React]
-        end
+    subgraph AWS CloudFront CDN Edge Distribution
+        CDN["https://d23lx8io3ta069.cloudfront.net<br/>(Edge SSL / TLSv1.2+ Terminated)"]
+    end
 
-        subgraph Spring Boot Backend Container
-            Backend[hrms-backend:8080<br/>Spring Boot 3.2.5 / Tomcat]
+    subgraph AWS S3 Static Bucket
+        S3["s3://hr-management-system-frontend-ho54ns2y<br/>(React Static Export / SPA Routing)"]
+    end
+
+    subgraph AWS EC2 Instance: ec2-13-234-219-16
+        subgraph Docker Bridge Network: hrms_network
+            Nginx["hrms-nginx:80<br/>CORS & Reverse Proxy"]
+            Backend["hrms-backend:8080<br/>Spring Boot 3.2.5 REST API"]
             Security[JwtAuthFilter / Spring Security]
             Controller[REST Controllers]
             Service[Business Logic / Services]
             Repository[Spring Data JPA / Hibernate]
             Seeder[DataSeeder <br/>Initial Accounts]
         end
-
-        subgraph MySQL Database Container
-            DB[(hrms-db:3306<br/>MySQL 8.0)]
-            Volume[Docker Volume: mysql_data]
-        end
     end
 
-    Client -- "HTTP GET/POST (JSON)" --> Frontend
-    Client -- "Direct API Requests / Axios (port 8080)" --> Backend
-    Frontend -- "API Proxy / Server Components" --> Backend
-    Backend --> Security
-    Security --> Controller
-    Controller --> Service
-    Service --> Repository
-    Repository -- "JDBC connection<br/>(jdbc:mysql://db:3306/hrms_db)" --> DB
-    Seeder -. "Seeds defaults on boot" .-> Repository
-    DB --- Volume
+    subgraph TiDB Cloud Serverless Cluster
+        TiDB[(gateway01.us-east-1.prod.aws.tidbcloud.com:4000<br/>MySQL 8.0 Compatible Engine)]
+    end
+
+    Client -- "HTTPS Requests" --> CDN
+    CDN -- "Default Route (/)" --> S3
+    CDN -- "API Route (/api/*)" --> Nginx
+    Nginx -- "proxy_pass http://backend:8080" --> Backend
+    Backend --> Security --> Controller --> Service --> Repository
+    Repository -- "Encrypted JDBC SSL Connection" --> TiDB
+    Seeder -. "Seeds initial Admin/HR/Emp accounts on boot" .-> Repository
 ```
 
 ---

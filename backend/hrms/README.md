@@ -1,13 +1,15 @@
-# 🏢 HRMS Backend — Spring Boot 3.2.5 + MySQL / H2
+# 🏢 HRMS Backend — Spring Boot 3.2.5 + TiDB Cloud Serverless MySQL / H2
 
 ## Tech Stack
 | Layer | Technology |
 |-------|-----------|
-| Backend | Spring Boot 3.2.5, Java 17 |
-| Database | MySQL 8.x (Production/AWS) & H2 Embedded DB (Local Development) |
-| Security | Spring Security + JWT (JJWT) |
-| Docs | Swagger UI (SpringDoc OpenAPI 3) |
-| Build | Maven |
+| Backend Engine | Spring Boot 3.2.5, Java 17 (`Eclipse Temurin JRE`) |
+| Production Database | TiDB Cloud Serverless MySQL 8.0 Cluster (`$0/mo Free Tier` / SSL Verified) |
+| Local Database | Containerized MySQL 8.0 & H2 Embedded Database (`local` profile) |
+| Reverse Proxy & CORS | Nginx Alpine (`docker-compose.prod.yml`) proxied via CloudFront Edge (`/api/*`) |
+| Authentication & Security | Spring Security + JWT (`JJWT` 256-bit HS256) |
+| API Documentation | Swagger UI (SpringDoc OpenAPI 3) |
+| Build Tool | Maven 3.9.x |
 
 ---
 
