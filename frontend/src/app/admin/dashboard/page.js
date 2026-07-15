@@ -193,7 +193,7 @@ const handleLeaveAction = async (id, action) => {
       ) : (
         <>
           {/* Stats Row */}
-          <div style={{ display: 'flex', gap: '16px', marginBottom: '24px' }}>
+          <div className="dashboard-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
             <StatCard
               label="Total Employees"
               value={employees.length}
@@ -221,7 +221,7 @@ const handleLeaveAction = async (id, action) => {
           </div>
 
           {/* Main Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+          <div className="dashboard-main-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
 
             {/* Pending Leave Approvals */}
             <div style={{ background: 'white', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', overflow: 'hidden' }}>
@@ -353,59 +353,63 @@ const handleLeaveAction = async (id, action) => {
               </button>
             </div>
 
-            {/* Table Header */}
-            <div style={{ display: 'grid', gridTemplateColumns: '0.5fr 2fr 1.5fr 1.5fr 1fr 1fr', padding: '10px 20px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-              {['ID', 'Name', 'Department', 'Designation', 'Role', 'Status'].map(h => (
-                <div key={h} style={{ fontSize: '11px', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  {h}
-                </div>
-              ))}
-            </div>
-
-            {employees.slice(0, 6).map((e, i) => (
-              <div key={e.id || e.employeeCode || i} style={{
-                display: 'grid', gridTemplateColumns: '0.5fr 2fr 1.5fr 1.5fr 1fr 1fr',
-                padding: '12px 20px', borderBottom: '1px solid #f1f5f9', alignItems: 'center',
-              }}>
-                <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: '600' }}>
-                  {e.employeeCode}
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{
-                    width: '30px', height: '30px', borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #1e3a5f, #3b82f6)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '11px', fontWeight: '700', color: 'white', flexShrink: 0,
-                  }}>
-                    {e.firstName?.[0]}{e.lastName?.[0]}
-                  </div>
-                  <div>
-                    <div style={{ fontSize: '13px', fontWeight: '600', color: '#1e293b' }}>
-                      {e.firstName} {e.lastName}
+            {/* Table Header & Rows */}
+            <div className="table-responsive">
+              <div className="admin-employees-table" style={{ minWidth: '680px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '0.5fr 2fr 1.5fr 1.5fr 1fr 1fr', padding: '10px 20px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+                  {['ID', 'Name', 'Department', 'Designation', 'Role', 'Status'].map(h => (
+                    <div key={h} style={{ fontSize: '11px', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      {h}
                     </div>
-                    <div style={{ fontSize: '11px', color: '#94a3b8' }}>{e.email}</div>
-                  </div>
+                  ))}
                 </div>
-                <div style={{ fontSize: '13px', color: '#64748b' }}>{e.department || '—'}</div>
-                <div style={{ fontSize: '13px', color: '#64748b' }}>{e.designation || '—'}</div>
-                <div>
-                  <span style={{
-                    background: e.role === 'ADMIN' ? '#dbeafe' : e.role === 'HR' ? '#fdf4ff' : '#f1f5f9',
-                    color: e.role === 'ADMIN' ? '#1d4ed8' : e.role === 'HR' ? '#9333ea' : '#374151',
-                    padding: '3px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: '700',
+
+                {employees.slice(0, 6).map((e, i) => (
+                  <div key={e.id || e.employeeCode || i} style={{
+                    display: 'grid', gridTemplateColumns: '0.5fr 2fr 1.5fr 1.5fr 1fr 1fr',
+                    padding: '12px 20px', borderBottom: '1px solid #f1f5f9', alignItems: 'center',
                   }}>
-                    {e.role}
-                  </span>
-                </div>
-                <div>
-                  <Badge status={e.active ? 'ACTIVE' : 'INACTIVE'}/>
-                </div>
+                    <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: '600' }}>
+                      {e.employeeCode}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{
+                        width: '30px', height: '30px', borderRadius: '50%',
+                        background: 'linear-gradient(135deg, #1e3a5f, #3b82f6)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: '11px', fontWeight: '700', color: 'white', flexShrink: 0,
+                      }}>
+                        {e.firstName?.[0]}{e.lastName?.[0]}
+                      </div>
+                      <div>
+                        <div style={{ fontSize: '13px', fontWeight: '600', color: '#1e293b' }}>
+                          {e.firstName} {e.lastName}
+                        </div>
+                        <div style={{ fontSize: '11px', color: '#94a3b8' }}>{e.email}</div>
+                      </div>
+                    </div>
+                    <div style={{ fontSize: '13px', color: '#64748b' }}>{e.department || '—'}</div>
+                    <div style={{ fontSize: '13px', color: '#64748b' }}>{e.designation || '—'}</div>
+                    <div>
+                      <span style={{
+                        background: e.role === 'ADMIN' ? '#dbeafe' : e.role === 'HR' ? '#fdf4ff' : '#f1f5f9',
+                        color: e.role === 'ADMIN' ? '#1d4ed8' : e.role === 'HR' ? '#9333ea' : '#374151',
+                        padding: '3px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: '700',
+                      }}>
+                        {e.role}
+                      </span>
+                    </div>
+                    <div>
+                      <Badge status={e.active ? 'ACTIVE' : 'INACTIVE'}/>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
 
           {/* Quick Actions */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '14px', marginTop: '20px' }}>
+          <div className="dashboard-actions-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '14px', marginTop: '20px' }}>
             {[
               { label: 'Add Employee', icon: '👤', color: '#1e3a5f', route: '/admin/employees' },
               { label: 'Leave Approvals', icon: '✅', color: '#16a34a', route: '/admin/leave' },

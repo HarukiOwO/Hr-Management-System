@@ -155,7 +155,7 @@ export default function EmployeeDashboard() {
       {loading ? <Loader /> : (
         <>
           {/* Stats Row */}
-          <div style={{ display: 'flex', gap: '16px', marginBottom: '24px' }}>
+          <div className="dashboard-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
             <StatCard
               label="Present Days"
               value={presentDays}
@@ -183,7 +183,7 @@ export default function EmployeeDashboard() {
           </div>
 
           {/* Main Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+          <div className="dashboard-main-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
 
             {/* Today Attendance */}
             <div style={{ background: 'white', borderRadius: '12px', padding: '20px', border: '1px solid #e2e8f0', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
@@ -285,7 +285,7 @@ export default function EmployeeDashboard() {
           </div>
 
           {/* Bottom Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+          <div className="dashboard-main-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
 
             {/* Recent Leave Requests */}
             <div style={{ background: 'white', borderRadius: '12px', padding: '20px', border: '1px solid #e2e8f0', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
