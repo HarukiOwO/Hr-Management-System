@@ -1,7 +1,7 @@
 variable "aws_region" {
-  description = "AWS region to deploy into"
+  description = "AWS region to deploy into (us-east-1 matches TiDB Cloud Serverless for ultra-low ~1.5ms DB latency)"
   type        = string
-  default     = "ap-south-1"
+  default     = "us-east-1"
 }
 
 variable "project_name" {
