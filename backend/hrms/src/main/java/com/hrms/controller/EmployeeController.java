@@ -55,7 +55,7 @@ public class EmployeeController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','HR')")
+    @PreAuthorize("hasAnyRole('ADMIN','HR','EMPLOYEE')")
     @Operation(summary = "Update employee")
     public ResponseEntity<ApiResponse<EmployeeDTOs.Response>> update(
             @PathVariable Long id, @RequestBody EmployeeDTOs.UpdateRequest req) {

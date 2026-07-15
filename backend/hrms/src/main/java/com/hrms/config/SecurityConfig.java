@@ -44,8 +44,6 @@ public class SecurityConfig {
 
     // Admin/HR only endpoints
     private static final String[] ADMIN_HR_URLS = {
-            "/api/employees/**",
-            "/api/employees/*",
             "/api/employees/search",
             "/api/payroll/generate",
             "/api/payroll/month",
@@ -116,10 +114,16 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of(
+                "http://localhost:3000",
+                "http://127.0.0.1:3000",
+                "https://hrms.saitejainfotechprivatelimited.com"
+        ));
         config.setAllowedOriginPatterns(List.of("*"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
+        config.setMaxAge(3600L);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
