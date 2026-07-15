@@ -18,11 +18,11 @@ export default function AdminLayout({ children }) {
   }, [isAuthenticated, user, router]);
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#f8fafc' }}>
+    <div className="app-container">
       <Sidebar role={user?.role} />
-      <div style={{ flex: 1, marginLeft: '240px' }}>
+      <div className="app-main-content">
         <Navbar />
-        <main style={{ marginTop: '60px', padding: '24px' }}>
+        <main className="app-main-padding">
           {children}
         </main>
       </div>

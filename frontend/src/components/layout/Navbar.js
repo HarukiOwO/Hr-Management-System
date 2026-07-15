@@ -353,17 +353,30 @@ export default function Navbar() {
   };
 
   return (
-    <div style={{
-      position: 'fixed', top: 0, left: '240px', right: 0, zIndex: 30,
-      height: '60px', background: 'white',
-      borderBottom: '1px solid #e2e8f0',
-      display: 'flex', alignItems: 'center',
-      justifyContent: 'space-between', padding: '0 24px',
-      boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
-    }}>
+    <div className="app-navbar">
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        {/* Mobile Hamburger Button */}
+        <button
+          className="mobile-hamburger"
+          onClick={() => window.dispatchEvent(new CustomEvent('toggleMobileSidebar'))}
+          style={{
+            display: 'none',
+            background: '#f1f5f9', border: 'none', borderRadius: '8px',
+            padding: '8px', cursor: 'pointer', color: '#1e293b',
+            alignItems: 'center', justifyContent: 'center',
+          }}
+          title="Toggle Menu"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
 
-      {/* Search Box */}
-      <div style={{ position: 'relative', width: '280px' }}>
+        {/* Search Box */}
+        <div style={{ position: 'relative', width: '280px' }}>
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
           stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
           style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', zIndex: 1 }}>
@@ -484,6 +497,7 @@ export default function Navbar() {
             })}
           </div>
         )}
+      </div>
       </div>
 
       {/* Right Side */}

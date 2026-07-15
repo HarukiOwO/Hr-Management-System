@@ -1,4 +1,5 @@
 'use client';
+import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '@/store/authSlice';
@@ -38,6 +39,13 @@ export default function Sidebar({ role }) {
   const pathname = usePathname();
   const dispatch = useDispatch();
   const { user } = useSelector((s) => s.auth);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+
+  useEffect(() => {
+    const handleToggle = () => setIsMobileOpen((prev) => !prev);
+    window.addEventListener('toggleMobileSidebar', handleToggle);
+    return () => window.removeEventListener('toggleMobileSidebar', handleToggle);
+  }, []);
 
   const menu = role === 'ADMIN' || role === 'HR' ? ADMIN_MENU : EMP_MENU;
   const settingsRoute = role === 'ADMIN' || role === 'HR'
@@ -60,14 +68,15 @@ export default function Sidebar({ role }) {
   });
 
   return (
-    <div style={{
-      width: '240px', flexShrink: 0,
-      background: '#1e3a5f',
-      display: 'flex', flexDirection: 'column',
-      position: 'fixed', left: 0, top: 0, bottom: 0,
-      zIndex: 40,
-    }}>
-      {/* Logo */}
+    <>
+      {isMobileOpen && (
+        <div 
+          className="mobile-overlay" 
+          onClick={() => setIsMobileOpen(false)}
+        />
+      )}
+      <div className={`app-sidebar ${isMobileOpen ? 'mobile-open' : ''}`}>
+        {/* Logo */}
       <div style={{
         padding: '20px 20px 16px',
         borderBottom: '1px solid rgba(255,255,255,0.08)',
@@ -92,7 +101,7 @@ export default function Sidebar({ role }) {
         {menu.map((item) => (
           <div
             key={item.key}
-            onClick={() => router.push(item.key)}
+            onClick={() => { setIsMobileOpen(false); router.push(item.key); }}
             style={navItemStyle(item.key)}
             onMouseEnter={e => {
               if (pathname !== item.key)
@@ -114,7 +123,7 @@ export default function Sidebar({ role }) {
 
         {/* Settings */}
         <div
-          onClick={() => router.push(settingsRoute)}
+          onClick={() => { setIsMobileOpen(false); router.push(settingsRoute); }}
           style={{
             ...navItemStyle(settingsRoute),
             marginBottom: '4px',
@@ -156,5 +165,6 @@ export default function Sidebar({ role }) {
         </div>
       </div>
     </div>
+    </>
   );
 }
