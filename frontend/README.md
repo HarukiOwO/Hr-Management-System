@@ -32,7 +32,7 @@ The frontend is divided into dedicated portals tailored for administrators, HR m
 | Category | Technology | Description |
 | :--- | :--- | :--- |
 | **Framework** | [Next.js 16](https://nextjs.org/) | Modern React framework utilizing App Router (`output: export` for static HTML/JS) |
-| **Edge Hosting** | [AWS CloudFront + S3](https://aws.amazon.com/) | Global edge delivery via CDN (`https://d23lx8io3ta069.cloudfront.net`) with `$0/mo` static hosting |
+| **Edge Hosting** | [AWS CloudFront + S3](https://aws.amazon.com/) | Global edge delivery via CDN (`https://d2cloh163xljkh.cloudfront.net`) with `$0/mo` static hosting |
 | **API Reverse Proxy** | [CloudFront `/api/*`](https://aws.amazon.com/) | Eliminates CORS & Mixed Content errors by proxying HTTPS `/api/*` requests directly to EC2 Nginx |
 | **UI Library** | [React 19](https://react.dev/) | Core UI rendering engine |
 | **State Management**| [Redux Toolkit](https://redux-toolkit.js.org/) | Global authentication and application state (`src/store/`) |

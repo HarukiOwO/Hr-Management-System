@@ -18,7 +18,7 @@ Welcome to the comprehensive technical documentation for the **HR Management Sys
 
 The HRMS application supports both **Enterprise Cloud Deployment (AWS Option 2 Architecture)** and **Local Multi-Container Development**:
 * **Presentation Layer (Frontend):** Next.js 16 (React 19) with Tailwind CSS v4 (`output: export` static HTML/JS for zero-server CDN edge delivery).
-* **Edge Reverse Proxy Layer:** AWS CloudFront CDN with `/api/*` ordered caching behavior routing directly to Nginx Alpine on EC2 (`t3.micro`).
+* **Edge Reverse Proxy Layer:** AWS CloudFront CDN with `/api/*` ordered caching behavior routing directly to Nginx Alpine on EC2 (`t3.small` in `us-east-1`).
 * **Application Layer (Backend):** Java 17 with Spring Boot 3.2.5, Spring Security (JWT), and Hibernate JPA.
 * **Data Persistence Layer (Database):** TiDB Cloud Serverless MySQL (`$0/mo Free Tier` in production) or containerized MySQL 8.0 (`docker-compose-test.yml` locally).
 
@@ -29,15 +29,15 @@ graph TD
         Client[Browser / Client Device]
     end
 
-    subgraph AWS CloudFront CDN Edge Distribution
-        CDN["https://d23lx8io3ta069.cloudfront.net<br/>(Edge SSL / TLSv1.2+ Terminated)"]
+    subgraph AWS CloudFront CDN Edge Distribution (E2QCPRK45LRQB2)
+        CDN["https://d2cloh163xljkh.cloudfront.net<br/>(Edge SSL / TLSv1.2+ Terminated)"]
     end
 
     subgraph AWS S3 Static Bucket
-        S3["s3://hr-management-system-frontend-ho54ns2y<br/>(React Static Export / SPA Routing)"]
+        S3["s3://hr-management-system-frontend-64fqj6pp<br/>(React Static Export / SPA Routing)"]
     end
 
-    subgraph AWS EC2 Instance: ec2-13-234-219-16
+    subgraph AWS EC2 Instance: ec2-32-193-50-120 (us-east-1)
         subgraph Docker Bridge Network: hrms_network
             Nginx["hrms-nginx:80<br/>CORS & Reverse Proxy"]
             Backend["hrms-backend:8080<br/>Spring Boot 3.2.5 REST API"]

@@ -24,15 +24,15 @@ graph TD
         Client[Browser / User Device]
     end
 
-    subgraph AWS CloudFront CDN Edge (E112D42R8PTQKW)
-        CDN["https://d23lx8io3ta069.cloudfront.net<br/>(HTTPS Edge SSL Certificate)"]
+    subgraph AWS CloudFront CDN Edge (E2QCPRK45LRQB2)
+        CDN["https://d2cloh163xljkh.cloudfront.net<br/>(HTTPS Edge SSL Certificate)"]
     end
 
     subgraph AWS S3 Static Storage
-        S3["s3://hr-management-system-frontend-ho54ns2y<br/>(Next.js 16 Static HTML / JS Export)"]
+        S3["s3://hr-management-system-frontend-64fqj6pp<br/>(Next.js 16 Static HTML / JS Export)"]
     end
 
-    subgraph AWS EC2 t3.micro Instance (13.234.219.16)
+    subgraph AWS EC2 t3.small Instance (32.193.50.120)
         subgraph Docker Bridge Network: hrms_network
             Nginx["hrms-nginx (Port 80)<br/>Reverse Proxy + CORS"]
             SpringBoot["hrms-backend (Port 8080)<br/>Spring Boot 3.2.5 REST API"]
@@ -51,8 +51,8 @@ graph TD
 ```
 
 ### ⚡ Live Production Endpoints
-* **Frontend Portal (HTTPS CDN):** 👉 **`https://d23lx8io3ta069.cloudfront.net`**
-* **Backend Reverse Proxy IP:** **`http://13.234.219.16`** *(Proxied automatically by CloudFront via `/api/*`)*
+* **Frontend Portal (HTTPS CDN):** 👉 **`https://d2cloh163xljkh.cloudfront.net`**
+* **Backend Reverse Proxy IP:** **`http://32.193.50.120`** *(Proxied automatically by CloudFront via `/api/*`)*
 * **Database Cluster:** **`gateway01.us-east-1.prod.aws.tidbcloud.com:4000`** *(TiDB Cloud Serverless MySQL)*
 
 ---
@@ -126,8 +126,8 @@ npm run dev
 
 Whenever you make updates to the code and want to deploy to your live AWS cloud infrastructure:
 
-### 1. Update Backend on AWS EC2 (`13.234.219.16`)
-SSH into your EC2 server (`ip-10-0-1-205`) and run:
+### 1. Update Backend on AWS EC2 (`32.193.50.120`)
+SSH into your EC2 server (`ip-10-0-1-69`) and run:
 ```bash
 git pull origin dev
 docker compose -f docker-compose.prod.yml up -d --build
@@ -139,10 +139,10 @@ Open PowerShell inside `frontend/` on your development machine:
 cd d:\Hr-Management-System\frontend
 Remove-Item -Recurse -Force .next, out -ErrorAction SilentlyContinue
 npm run build
-aws s3 sync ./out s3://hr-management-system-frontend-ho54ns2y/ --delete
-aws cloudfront create-invalidation --distribution-id E112D42R8PTQKW --paths "/*"
+aws s3 sync ./out s3://hr-management-system-frontend-64fqj6pp/ --delete
+aws cloudfront create-invalidation --distribution-id E2QCPRK45LRQB2 --paths "/*"
 ```
-Once the invalidation completes (`~10 seconds`), your global CDN link **`https://d23lx8io3ta069.cloudfront.net`** will serve your latest updates instantly over HTTPS!
+Once the invalidation completes (`~10 seconds`), your global CDN link **`https://d2cloh163xljkh.cloudfront.net`** will serve your latest updates instantly over HTTPS!
 
 ---
 
