@@ -43,6 +43,18 @@ resource "aws_cloudfront_distribution" "frontend" {
     origin_access_control_id = aws_cloudfront_origin_access_control.frontend_oac.id
   }
 
+  origin {
+    domain_name = aws_eip.app_server_eip.public_ip
+    origin_id   = "EC2-API-Server"
+
+    custom_origin_config {
+      http_port              = 80
+      https_port             = 443
+      origin_protocol_policy = "http-only"
+      origin_ssl_protocols   = ["TLSv1.2"]
+    }
+  }
+
   enabled             = true
   is_ipv6_enabled     = true
   default_root_object = "index.html"
@@ -60,6 +72,27 @@ resource "aws_cloudfront_distribution" "frontend" {
     response_code         = 200
     response_page_path    = "/index.html"
     error_caching_min_ttl = 10
+  }
+
+  # Route all backend API requests via HTTPS CloudFront CDN to EC2 Server
+  ordered_cache_behavior {
+    path_pattern     = "/api/*"
+    allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    cached_methods   = ["GET", "HEAD"]
+    target_origin_id = "EC2-API-Server"
+
+    forwarded_values {
+      query_string = true
+      headers      = ["Authorization", "Host", "Origin", "Accept", "Content-Type", "Access-Control-Request-Headers", "Access-Control-Request-Method"]
+      cookies {
+        forward = "all"
+      }
+    }
+
+    viewer_protocol_policy = "redirect-to-https"
+    min_ttl                = 0
+    default_ttl            = 0 # Never cache API responses at CDN edge!
+    max_ttl                = 0
   }
 
   default_cache_behavior {
