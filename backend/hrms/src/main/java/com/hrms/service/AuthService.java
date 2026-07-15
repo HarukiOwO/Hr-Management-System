@@ -18,12 +18,17 @@ public class AuthService {
 
     private final AuthenticationManager authenticationManager;
     private final EmployeeRepository employeeRepository;
+    private final UserCacheService userCacheService;
     private final JwtUtil jwtUtil;
 
     public AuthDTOs.AuthResponse login(AuthDTOs.LoginRequest request) {
 
-        Employee emp = employeeRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new BadCredentialsException("Invalid email or password"));
+        Employee emp;
+        try {
+            emp = userCacheService.getByEmail(request.getEmail());
+        } catch (Exception e) {
+            throw new BadCredentialsException("Invalid email or password");
+        }
 
         // Enforce correct portal based on UI login type
         // UI shows employee portal  or  admin portal (covers admin+hr both)
@@ -61,8 +66,12 @@ public class AuthService {
             throw new BadCredentialsException("Invalid or expired refresh token");
         }
         String email = jwtUtil.extractEmail(request.getRefreshToken());
-        Employee emp = employeeRepository.findByEmail(email)
-                .orElseThrow(() -> new BadCredentialsException("User not found"));
+        Employee emp;
+        try {
+            emp = userCacheService.getByEmail(email);
+        } catch (Exception e) {
+            throw new BadCredentialsException("User not found");
+        }
 
         AuthDTOs.AuthResponse response = new AuthDTOs.AuthResponse();
         response.setAccessToken(jwtUtil.generateToken(emp));

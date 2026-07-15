@@ -88,9 +88,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public UserDetailsService userDetailsService(EmployeeRepository employeeRepository) {
-        return username -> employeeRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+    public UserDetailsService userDetailsService(com.hrms.service.UserCacheService userCacheService) {
+        return username -> userCacheService.getByEmail(username);
     }
 
     @Bean
