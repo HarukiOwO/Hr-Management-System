@@ -18,14 +18,18 @@ echo "[3/5] Enabling and starting Docker service..."
 sudo systemctl enable docker
 sudo systemctl start docker
 
-# Install Docker Compose v2 CLI plugin
-echo "[4/5] Installing Docker Compose v2 plugin..."
+# Install Docker Compose v2 CLI plugin & Buildx plugin
+echo "[4/5] Installing Docker Compose v2 and Buildx plugins..."
 sudo mkdir -p /usr/local/lib/docker/cli-plugins /usr/local/bin /usr/libexec/docker/cli-plugins
 sudo curl -SL https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 -o /usr/local/lib/docker/cli-plugins/docker-compose
 sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 sudo ln -sf /usr/local/lib/docker/cli-plugins/docker-compose /usr/local/bin/docker-compose
 sudo ln -sf /usr/local/lib/docker/cli-plugins/docker-compose /usr/bin/docker-compose
 sudo ln -sf /usr/local/lib/docker/cli-plugins/docker-compose /usr/libexec/docker/cli-plugins/docker-compose
+
+sudo curl -SL https://github.com/docker/buildx/releases/download/v0.21.1/buildx-v0.21.1.linux-amd64 -o /usr/local/lib/docker/cli-plugins/docker-buildx
+sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-buildx
+sudo ln -sf /usr/local/lib/docker/cli-plugins/docker-buildx /usr/libexec/docker/cli-plugins/docker-buildx
 
 # Add users to docker group so docker commands can run without sudo
 echo "[5/5] Adding users to 'docker' group..."
