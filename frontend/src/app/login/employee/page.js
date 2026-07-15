@@ -69,13 +69,13 @@ export default function EmployeeLogin() {
 
 
   return (
-    <div style={{
+    <div className="login-container" style={{
       minHeight: '100vh',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       padding: '20px',
       background: 'linear-gradient(160deg, #dbeafe 0%, #eff6ff 45%, #ffffff 100%)',
     }}>
-      <div style={{
+      <div className="login-card" style={{
         background: 'white', borderRadius: '28px',
         padding: '40px 36px', width: '100%', maxWidth: '420px',
         boxShadow: '0 8px 40px rgba(59,130,246,0.12)',

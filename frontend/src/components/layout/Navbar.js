@@ -376,7 +376,7 @@ export default function Navbar() {
         </button>
 
         {/* Search Box */}
-        <div style={{ position: 'relative', width: '280px' }}>
+        <div className="nav-search-box" style={{ position: 'relative', width: '100%', maxWidth: '280px' }}>
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
           stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
           style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', zIndex: 1 }}>
@@ -501,7 +501,7 @@ export default function Navbar() {
       </div>
 
       {/* Right Side */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+      <div className="nav-right-side" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
 
         {/* Notification Bell */}
         <div
@@ -524,10 +524,10 @@ export default function Navbar() {
         </div>
 
         {/* Divider */}
-        <div style={{ width: '1px', height: '28px', background: '#e2e8f0' }}/>
+        <div className="nav-divider" style={{ width: '1px', height: '28px', background: '#e2e8f0' }}/>
 
         {/* Role Badge */}
-        <span style={{
+        <span className="nav-role-badge" style={{
           background: user?.role === 'ADMIN' ? '#dbeafe'
             : user?.role === 'HR' ? '#fdf4ff' : '#f0fdf4',
           color: user?.role === 'ADMIN' ? '#1d4ed8'
@@ -546,14 +546,15 @@ export default function Navbar() {
             borderRadius: '50%', display: 'flex',
             alignItems: 'center', justifyContent: 'center',
             color: 'white', fontSize: '13px', fontWeight: '700',
+            flexShrink: 0,
           }}>
             {user?.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
           </div>
-          <div>
-            <div style={{ fontSize: '13px', fontWeight: '600', color: '#1e293b' }}>
+          <div className="nav-user-info">
+            <div style={{ fontSize: '13px', fontWeight: '600', color: '#1e293b', whiteSpace: 'nowrap' }}>
               {user?.name}
             </div>
-            <div style={{ fontSize: '11px', color: '#94a3b8' }}>
+            <div style={{ fontSize: '11px', color: '#94a3b8', whiteSpace: 'nowrap' }}>
               {user?.employeeCode} · {user?.role === 'ADMIN' ? 'Super Admin' : user?.role}
             </div>
           </div>
