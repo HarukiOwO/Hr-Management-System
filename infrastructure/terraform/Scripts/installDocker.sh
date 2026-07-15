@@ -18,8 +18,17 @@ echo "[3/5] Enabling and starting Docker service..."
 sudo systemctl enable docker
 sudo systemctl start docker
 
+# Install Docker Compose v2 CLI plugin
+echo "[4/5] Installing Docker Compose v2 plugin..."
+sudo mkdir -p /usr/local/lib/docker/cli-plugins /usr/local/bin /usr/libexec/docker/cli-plugins
+sudo curl -SL https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 -o /usr/local/lib/docker/cli-plugins/docker-compose
+sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+sudo ln -sf /usr/local/lib/docker/cli-plugins/docker-compose /usr/local/bin/docker-compose
+sudo ln -sf /usr/local/lib/docker/cli-plugins/docker-compose /usr/bin/docker-compose
+sudo ln -sf /usr/local/lib/docker/cli-plugins/docker-compose /usr/libexec/docker/cli-plugins/docker-compose
+
 # Add users to docker group so docker commands can run without sudo
-echo "[4/5] Adding users to 'docker' group..."
+echo "[5/5] Adding users to 'docker' group..."
 if id "ec2-user" &>/dev/null; then
     sudo usermod -aG docker ec2-user
     echo "Added ec2-user to docker group."
@@ -31,9 +40,9 @@ if id "jenkins" &>/dev/null; then
 fi
 
 # Verify installation
-echo "[5/5] Verifying Docker installation..."
+echo "Verifying Docker and Docker Compose installation..."
 docker --version
-sudo docker info | grep -E 'Server Version|Storage Driver|Kernel Version|Operating System' || true
+docker compose version || /usr/local/bin/docker-compose version
 
 echo "=========================================================="
 echo "Docker installation completed successfully!"
