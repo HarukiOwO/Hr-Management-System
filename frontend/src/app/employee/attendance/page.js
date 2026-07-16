@@ -142,7 +142,7 @@ export default function AttendancePage() {
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
             <button
               onClick={handleCheckIn}
-              disabled={!!todayAtt?.checkIn || checkingIn}
+              disabled={loading || !!todayAtt?.checkIn || checkingIn}
               style={{
                 padding: '12px 24px',
                 background: todayAtt?.checkIn ? 'rgba(255,255,255,0.1)' : 'white',
@@ -162,7 +162,7 @@ export default function AttendancePage() {
                   if (!todayAtt?.checkIn || todayAtt?.checkOut) return;
                   setShowRemarks(true);
                 }}
-                disabled={!todayAtt?.checkIn || !!todayAtt?.checkOut || checkingOut}
+                disabled={loading || !todayAtt?.checkIn || !!todayAtt?.checkOut || checkingOut}
                 style={{
                   padding: '12px 24px',
                   background: (!todayAtt?.checkIn || todayAtt?.checkOut) ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.15)',
