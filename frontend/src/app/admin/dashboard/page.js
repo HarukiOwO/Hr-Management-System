@@ -258,22 +258,22 @@ const handleLeaveAction = async (id, action) => {
                       &quot;{l.reason}&quot;
                     </div>
                     <div style={{ display: 'flex', gap: '8px' }}>
-                     <button
-  onClick={() => handleLeaveAction(l.id, 'APPROVED')}
-  disabled={actioning === l.id + 'APPROVED'}
-  style={{
-    padding: '6px 16px', background: '#dcfce7',
-    color: '#16a34a', border: '1px solid #bbf7d0',
-    borderRadius: '6px', fontSize: '12px', fontWeight: '700',
-    cursor: 'pointer',
-  }}
->
-  {actioning === l.id + 'APPROVED' ? '⏳' :
-    (l.approvalStage === 'MANAGER_PENDING' || l.status === 'PENDING')
-      ? '✓ Forward to HR'
-      : '✓ Approve'
-  }
-</button>
+                      <button
+                        onClick={() => handleLeaveAction(l.id, 'APPROVED')}
+                        disabled={actioning === l.id + 'APPROVED'}
+                        style={{
+                          padding: '6px 16px', background: '#dcfce7',
+                          color: '#16a34a', border: '1px solid #bbf7d0',
+                          borderRadius: '6px', fontSize: '12px', fontWeight: '700',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {actioning === l.id + 'APPROVED' ? '⏳' :
+                          (l.approvalStage === 'MANAGER_PENDING')
+                            ? '✓ Forward to HR'
+                            : '✓ Approve'
+                        }
+                      </button>
                       <button
                         onClick={() => handleLeaveAction(l.id, 'REJECTED')}
                         disabled={actioning === l.id + 'REJECTED'}

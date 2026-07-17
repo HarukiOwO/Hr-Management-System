@@ -15,6 +15,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "employees")
+@org.hibernate.annotations.DynamicUpdate
 @Getter
 @Setter
 @NoArgsConstructor

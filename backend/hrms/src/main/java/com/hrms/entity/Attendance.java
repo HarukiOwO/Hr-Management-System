@@ -10,6 +10,7 @@ import java.time.LocalTime;
 @Entity
 @Table(name = "attendance",
        uniqueConstraints = @UniqueConstraint(columnNames = {"employee_id", "date"}))
+@org.hibernate.annotations.DynamicUpdate
 @Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class Attendance {
 

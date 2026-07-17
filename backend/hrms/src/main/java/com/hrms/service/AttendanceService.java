@@ -6,8 +6,6 @@ import com.hrms.entity.Employee;
 import com.hrms.enums.AttendanceStatus;
 import com.hrms.repository.AttendanceRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,7 +22,6 @@ public class AttendanceService {
     private final EmployeeService employeeService;
 
     @Transactional
-    @CacheEvict(value = "dashboardData", allEntries = true)
     public AttendanceDTOs.Response checkIn(Long employeeId, AttendanceDTOs.CheckInRequest req) {
         Employee emp = employeeService.findById(employeeId);
         java.time.ZoneId istZone = java.time.ZoneId.of("Asia/Kolkata");
@@ -34,7 +31,7 @@ public class AttendanceService {
             throw new IllegalStateException("Already checked in for " + date);
         }
 
-        LocalTime checkIn = (req != null && req.getCheckIn() != null) ? req.getCheckIn() : LocalTime.now(istZone);
+        LocalTime checkIn = (req != null && req.getCheckIn() != null) ? req.getCheckIn() : LocalTime.now(istZone).withNano(0);
 
         Attendance att = Attendance.builder()
                 .employee(emp)
@@ -47,7 +44,6 @@ public class AttendanceService {
     }
 
     @Transactional
-    @CacheEvict(value = "dashboardData", allEntries = true)
     public AttendanceDTOs.Response checkOut(Long employeeId, AttendanceDTOs.CheckOutRequest req) {
         Employee emp = employeeService.findById(employeeId);
         java.time.ZoneId istZone = java.time.ZoneId.of("Asia/Kolkata");
@@ -57,7 +53,7 @@ public class AttendanceService {
                 .or(() -> attendanceRepo.findFirstByEmployeeAndCheckOutIsNullOrderByDateDesc(emp))
                 .orElseThrow(() -> new com.hrms.exception.AttendanceRecordNotFound());
 
-        LocalTime checkOut = (req != null && req.getCheckOut() != null) ? req.getCheckOut() : LocalTime.now(istZone);
+        LocalTime checkOut = (req != null && req.getCheckOut() != null) ? req.getCheckOut() : LocalTime.now(istZone).withNano(0);
         att.setCheckOut(checkOut);
 
         double hours = att.getCheckIn().until(checkOut, java.time.temporal.ChronoUnit.MINUTES) / 60.0;
@@ -77,14 +73,12 @@ public class AttendanceService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable("dashboardData")
     public Page<AttendanceDTOs.Response> getMyAttendance(Long employeeId, Pageable pageable) {
         Employee emp = employeeService.findById(employeeId);
         return attendanceRepo.findByEmployee(emp, pageable).map(this::toResponse);
     }
 
     @Transactional(readOnly = true)
-    @Cacheable("dashboardData")
     public Page<AttendanceDTOs.Response> getAttendanceByDate(LocalDate date, Pageable pageable) {
         return attendanceRepo.findByDate(date, pageable).map(this::toResponse);
     }

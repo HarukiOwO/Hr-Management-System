@@ -41,22 +41,53 @@ public class EmployeeService {
     @Transactional
     @CacheEvict(value = "dashboardData", allEntries = true)
     public EmployeeDTOs.Response createEmployee(EmployeeDTOs.CreateRequest req) {
-        if (employeeRepository.existsByEmail(req.getEmail())) {
-            throw new EmployeeAlreadyExists(req.getEmail());
+        if (req.getEmail() == null || req.getEmail().trim().isBlank()) {
+            throw new IllegalArgumentException("Email is required");
         }
+        String email = req.getEmail().trim().toLowerCase();
+        req.setEmail(email);
+
+        java.util.Optional<Employee> existingOpt = employeeRepository.findByEmail(email);
+        if (existingOpt.isPresent()) {
+            Employee existing = existingOpt.get();
+            if (existing.isActive()) {
+                throw new EmployeeAlreadyExists(email);
+            } else {
+                if (req.getFirstName() != null) existing.setFirstName(req.getFirstName().trim());
+                if (req.getLastName() != null) existing.setLastName(req.getLastName().trim());
+                existing.setEmail(email);
+                if (req.getPassword() != null && !req.getPassword().isBlank()) {
+                    existing.setPassword(passwordEncoder.encode(req.getPassword()));
+                }
+                if (req.getPhone() != null) existing.setPhone(req.getPhone().trim());
+                if (req.getDepartment() != null) existing.setDepartment(req.getDepartment().trim());
+                if (req.getDesignation() != null) existing.setDesignation(req.getDesignation().trim());
+                if (req.getBasicSalary() != null) existing.setBasicSalary(req.getBasicSalary());
+                existing.setDateOfJoining(req.getDateOfJoining() != null ? req.getDateOfJoining() : LocalDate.now());
+                if (req.getDateOfBirth() != null) existing.setDateOfBirth(req.getDateOfBirth());
+                if (req.getRole() != null) existing.setRole(req.getRole());
+                existing.setActive(true);
+
+                if (userCacheService != null) {
+                    userCacheService.evict(email);
+                }
+                return toResponse(employeeRepository.save(existing));
+            }
+        }
+
         Employee emp = Employee.builder()
                 .employeeId(generateEmployeeId())
-                .firstName(req.getFirstName())
-                .lastName(req.getLastName())
-                .email(req.getEmail())
+                .firstName(req.getFirstName() != null ? req.getFirstName().trim() : null)
+                .lastName(req.getLastName() != null ? req.getLastName().trim() : null)
+                .email(email)
                 .password(passwordEncoder.encode(req.getPassword()))
-                .phone(req.getPhone())
-                .department(req.getDepartment())
-                .designation(req.getDesignation())
+                .phone(req.getPhone() != null ? req.getPhone().trim() : null)
+                .department(req.getDepartment() != null ? req.getDepartment().trim() : null)
+                .designation(req.getDesignation() != null ? req.getDesignation().trim() : null)
                 .basicSalary(req.getBasicSalary())
                 .dateOfJoining(req.getDateOfJoining() != null ? req.getDateOfJoining() : LocalDate.now())
                 .dateOfBirth(req.getDateOfBirth())
-                .role(req.getRole())
+                .role(req.getRole() != null ? req.getRole() : Role.EMPLOYEE)
                 .active(true)
                 .build();
         return toResponse(employeeRepository.save(emp));
@@ -109,25 +140,23 @@ public class EmployeeService {
         if (userCacheService != null && emp.getEmail() != null) {
             userCacheService.evict(emp.getEmail());
         }
-        String[] childQueries = {
-            "DELETE FROM Attendance a WHERE a.employee.id = :id",
-            "DELETE FROM LeaveRequest l WHERE l.employee.id = :id",
-            "DELETE FROM LeaveBalance l WHERE l.employee.id = :id",
-            "DELETE FROM Payroll p WHERE p.employee.id = :id",
-            "DELETE FROM Payslip p WHERE p.employee.id = :id",
-            "DELETE FROM PerformanceReview p WHERE p.employee.id = :id OR p.reviewer.id = :id",
-            "DELETE FROM Notification n WHERE n.recipient.id = :id",
-            "DELETE FROM Onboarding o WHERE o.employee.id = :id",
-            "DELETE FROM TrainingEnrollment t WHERE t.employee.id = :id"
-        };
-        for (String q : childQueries) {
-            try {
-                if (entityManager != null) {
-                    entityManager.createQuery(q).setParameter("id", id).executeUpdate();
-                }
-            } catch (Exception e) {
-                // Ignore if child entity is not found
-            }
+        if (entityManager != null) {
+            entityManager.createQuery("UPDATE LeaveRequest l SET l.manager = null WHERE l.manager.id = :id").setParameter("id", id).executeUpdate();
+            entityManager.createQuery("UPDATE LeaveRequest l SET l.approvedBy = null WHERE l.approvedBy.id = :id").setParameter("id", id).executeUpdate();
+            entityManager.createQuery("UPDATE Onboarding o SET o.assignedHr = null WHERE o.assignedHr.id = :id").setParameter("id", id).executeUpdate();
+            entityManager.createQuery("UPDATE JobPosting j SET j.createdBy = null WHERE j.createdBy.id = :id").setParameter("id", id).executeUpdate();
+            entityManager.createQuery("UPDATE JobApplication j SET j.interviewer = null WHERE j.interviewer.id = :id").setParameter("id", id).executeUpdate();
+            entityManager.createQuery("UPDATE PerformanceReview p SET p.reviewer = null WHERE p.reviewer.id = :id").setParameter("id", id).executeUpdate();
+
+            entityManager.createQuery("DELETE FROM Attendance a WHERE a.employee.id = :id").setParameter("id", id).executeUpdate();
+            entityManager.createQuery("DELETE FROM LeaveRequest l WHERE l.employee.id = :id").setParameter("id", id).executeUpdate();
+            entityManager.createQuery("DELETE FROM LeaveBalance l WHERE l.employee.id = :id").setParameter("id", id).executeUpdate();
+            entityManager.createQuery("DELETE FROM Payroll p WHERE p.employee.id = :id").setParameter("id", id).executeUpdate();
+            entityManager.createQuery("DELETE FROM Payslip p WHERE p.employee.id = :id").setParameter("id", id).executeUpdate();
+            entityManager.createQuery("DELETE FROM PerformanceReview p WHERE p.employee.id = :id").setParameter("id", id).executeUpdate();
+            entityManager.createQuery("DELETE FROM Notification n WHERE n.recipient.id = :id").setParameter("id", id).executeUpdate();
+            entityManager.createQuery("DELETE FROM Onboarding o WHERE o.employee.id = :id").setParameter("id", id).executeUpdate();
+            entityManager.createQuery("DELETE FROM TrainingEnrollment t WHERE t.employee.id = :id").setParameter("id", id).executeUpdate();
         }
         employeeRepository.delete(emp);
     }
@@ -154,7 +183,12 @@ public class EmployeeService {
 
     private String generateEmployeeId() {
         long count = employeeRepository.count() + 1;
-        return "EMP" + String.format("%04d", count);
+        String empId = "EMP" + String.format("%04d", count);
+        while (employeeRepository.findByEmployeeId(empId).isPresent()) {
+            count++;
+            empId = "EMP" + String.format("%04d", count);
+        }
+        return empId;
     }
 
     public EmployeeDTOs.Response toResponse(Employee e) {
