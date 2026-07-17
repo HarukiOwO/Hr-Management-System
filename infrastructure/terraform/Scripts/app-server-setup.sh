@@ -7,13 +7,30 @@ echo "=========================================================="
 
 # Create application directory and environment secrets file
 mkdir -p /opt/hrms
-cat << 'EOF' > /opt/hrms/.env
-SPRING_DATASOURCE_URL=${db_url}
+cat << EOF > /opt/hrms/.env
+# --- Database & Spring Boot Configuration ---
+SPRING_PROFILES_ACTIVE=default
+SPRING_DATASOURCE_URL=${db_url}&useServerPrepStmts=false&serverTimezone=UTC
 SPRING_DATASOURCE_USERNAME=${db_username}
 SPRING_DATASOURCE_PASSWORD=${db_password}
 SPRING_JPA_DATABASE_PLATFORM=${db_platform}
+SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
+SHOW_SQL=false
+BACKEND_PORT=8080
+JAVA_OPTS=-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0
+
+# --- JWT Authentication ---
 JWT_SECRET=${jwt_secret}
-PORT=8080
+JWT_EXPIRATION=86400000
+JWT_REFRESH_EXPIRATION=604800000
+
+# --- Initial Data Seeder Configuration ---
+SEED_ADMIN_EMAIL=admin@hrms.com
+SEED_ADMIN_PASSWORD=Admin@123
+SEED_HR_EMAIL=hr@hrms.com
+SEED_HR_PASSWORD=Hr@12345
+SEED_EMPLOYEE_EMAIL=emp@hrms.com
+SEED_EMPLOYEE_PASSWORD=Emp@12345
 EOF
 
 chmod 600 /opt/hrms/.env
