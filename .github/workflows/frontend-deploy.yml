@@ -48,13 +48,3 @@ jobs:
 
       - name: Invalidate CloudFront Cache
         run: aws cloudfront create-invalidation --distribution-id E2SX5QZBJA7ZH --paths "/*"
-
-      - name: Pre-warm CloudFront Cache
-        run: |
-          echo "Waiting 10 seconds for CloudFront to invalidate..."
-          sleep 10
-          echo "Pre-warming the cache for Indian users..."
-          curl -s -o /dev/null https://hrms.saitejainfotechprivatelimited.com/
-          curl -s -o /dev/null https://hrms.saitejainfotechprivatelimited.com/login/employee
-          curl -s -o /dev/null https://hrms.saitejainfotechprivatelimited.com/login/admin
-          echo "Cache is warm!"
