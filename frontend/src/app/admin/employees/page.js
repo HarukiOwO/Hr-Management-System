@@ -242,6 +242,7 @@ export default function EmployeeManagementPage() {
         <div style={{
           display: 'grid',
           gridTemplateColumns: '0.6fr 2fr 1.2fr 1.2fr 1fr 1fr 1fr',
+          gap: '16px',
           padding: '10px 20px', background: '#f8fafc',
           borderBottom: '1px solid #e2e8f0',
         }}>
@@ -275,6 +276,7 @@ export default function EmployeeManagementPage() {
               <div key={emp.id} style={{
                 display: 'grid',
                 gridTemplateColumns: '0.6fr 2fr 1.2fr 1.2fr 1fr 1fr 1fr',
+                gap: '16px',
                 padding: '13px 20px', borderBottom: '1px solid #f1f5f9',
                 alignItems: 'center',
               }}
