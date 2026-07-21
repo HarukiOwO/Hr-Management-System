@@ -10,7 +10,7 @@ services:
     restart: always
     environment:
       MYSQL_DATABASE: hrms_db
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-change_me_in_env}
+      MYSQL_ROOT_PASSWORD: madhan@2103
     ports:
       - "3306:3306"
     volumes:

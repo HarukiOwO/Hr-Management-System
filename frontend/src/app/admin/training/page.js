@@ -5,14 +5,14 @@ import toast from 'react-hot-toast';
 
 function Badge({ status }) {
   const map = {
-    UPCOMING:  { bg: '#eff6ff', color: '#3b82f6' },
-    ONGOING:   { bg: '#fff7ed', color: '#f59e0b' },
+    UPCOMING: { bg: '#eff6ff', color: '#3b82f6' },
+    ONGOING: { bg: '#fff7ed', color: '#f59e0b' },
     COMPLETED: { bg: '#dcfce7', color: '#16a34a' },
     CANCELLED: { bg: '#fee2e2', color: '#dc2626' },
-    ENROLLED:  { bg: '#fdf4ff', color: '#9333ea' },
-    ONLINE:    { bg: '#eff6ff', color: '#3b82f6' },
-    OFFLINE:   { bg: '#f0fdf4', color: '#16a34a' },
-    HYBRID:    { bg: '#fff7ed', color: '#f59e0b' },
+    ENROLLED: { bg: '#fdf4ff', color: '#9333ea' },
+    ONLINE: { bg: '#eff6ff', color: '#3b82f6' },
+    OFFLINE: { bg: '#f0fdf4', color: '#16a34a' },
+    HYBRID: { bg: '#fff7ed', color: '#f59e0b' },
   };
   const s = map[status] || { bg: '#f1f5f9', color: '#64748b' };
   return (
@@ -48,18 +48,20 @@ const EMPTY_FORM = {
 };
 
 export default function TrainingPage() {
-  const [trainings, setTrainings]         = useState([]);
-  const [loading, setLoading]             = useState(true);
-  const [showForm, setShowForm]           = useState(false);
-  const [form, setForm]                   = useState(EMPTY_FORM);
-  const [submitting, setSubmitting]       = useState(false);
-  const [selected, setSelected]           = useState(null);
-  const [enrollments, setEnrollments]     = useState([]);
+  const [trainings, setTrainings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [submitting, setSubmitting] = useState(false);
+  const [selected, setSelected] = useState(null);
+  const [enrollments, setEnrollments] = useState([]);
   const [loadingEnroll, setLoadingEnroll] = useState(false);
-  const [completing, setCompleting]       = useState(null);
-  const [score, setScore]                 = useState('');
-  const [feedback, setFeedback]           = useState('');
-  const [completingId, setCompletingId]   = useState(null);
+  const [completing, setCompleting] = useState(null);
+  const [score, setScore] = useState('');
+  const [feedback, setFeedback] = useState('');
+  const [completingId, setCompletingId] = useState(null);
+  const today = new Date().toISOString().split("T")[0];
+
 
   const fetchTrainings = useCallback(async () => {
     setLoading(true);
@@ -127,7 +129,7 @@ export default function TrainingPage() {
   };
 
   const handleFocus = (e) => e.target.style.borderColor = '#3b82f6';
-  const handleBlur  = (e) => e.target.style.borderColor = '#e2e8f0';
+  const handleBlur = (e) => e.target.style.borderColor = '#e2e8f0';
 
   return (
     <div>
@@ -182,10 +184,10 @@ export default function TrainingPage() {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
                   <div style={{ fontSize: '14px', fontWeight: '700', color: '#1e293b' }}>{t.title}</div>
-                  <Badge status={t.status}/>
+                  <Badge status={t.status} />
                 </div>
                 <div style={{ fontSize: '12px', color: '#64748b', marginBottom: '4px' }}>
-                  👨‍🏫 {t.trainer} · <Badge status={t.mode}/>
+                  👨‍🏫 {t.trainer} · <Badge status={t.mode} />
                 </div>
                 <div style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '4px' }}>
                   📅 {t.startDate} → {t.endDate} · ⏱ {t.durationHours}h
@@ -251,7 +253,7 @@ export default function TrainingPage() {
                           </div>
                         </div>
                       </div>
-                      <Badge status={enr.status}/>
+                      <Badge status={enr.status} />
                     </div>
 
                     {enr.score && (
@@ -380,7 +382,17 @@ export default function TrainingPage() {
                   <input
                     type="date"
                     value={form.startDate}
-                    onChange={e => setForm(prev => ({ ...prev, startDate: e.target.value }))}
+                    onChange={e =>
+                      setForm(prev => ({
+                        ...prev,
+                        startDate: e.target.value,
+                        endDate:
+                          prev.endDate && prev.endDate < e.target.value
+                            ? ""
+                            : prev.endDate,
+                      }))
+                    }
+                    min={today}
                     required
                     style={inputStyle}
                     onFocus={handleFocus}
@@ -397,6 +409,7 @@ export default function TrainingPage() {
                     type="date"
                     value={form.endDate}
                     onChange={e => setForm(prev => ({ ...prev, endDate: e.target.value }))}
+                    min={form.startDate || today}
                     required
                     style={inputStyle}
                     onFocus={handleFocus}
@@ -459,6 +472,7 @@ export default function TrainingPage() {
                     onBlur={handleBlur}
                   />
                 </div>
+
               </div>
 
               {/* Description */}

@@ -33,14 +33,14 @@ function StatCard({ label, value, sub, color, bg, icon }) {
 
 function Badge({ status }) {
   const map = {
-    APPROVED:        { bg: '#dcfce7', color: '#16a34a' },
-    PENDING:         { bg: '#fef9c3', color: '#ca8a04' },
-    REJECTED:        { bg: '#fee2e2', color: '#dc2626' },
-    HR_PENDING:      { bg: '#fff7ed', color: '#f59e0b' },
+    APPROVED: { bg: '#dcfce7', color: '#16a34a' },
+    PENDING: { bg: '#fef9c3', color: '#ca8a04' },
+    REJECTED: { bg: '#fee2e2', color: '#dc2626' },
+    HR_PENDING: { bg: '#fff7ed', color: '#f59e0b' },
     MANAGER_PENDING: { bg: '#eff6ff', color: '#3b82f6' },
     CANCELLATION_PENDING: { bg: '#fdf4ff', color: '#9333ea' },
-    ACTIVE:          { bg: '#dcfce7', color: '#16a34a' },
-    INACTIVE:        { bg: '#fee2e2', color: '#dc2626' },
+    ACTIVE: { bg: '#dcfce7', color: '#16a34a' },
+    INACTIVE: { bg: '#fee2e2', color: '#dc2626' },
   };
   const s = map[status] || { bg: '#f1f5f9', color: '#64748b' };
   return (
@@ -127,51 +127,48 @@ export default function AdminDashboard() {
     return () => { active = false; };
   }, []);
 
-const handleLeaveAction = async (id, action) => {
-  setActioning(id + action);
-  try {
-    // Find the leave to check its current stage
-    const leave = pendingLeaves.find(l => l.id === id);
-    const stage = leave?.approvalStage || leave?.status;
+  const handleLeaveAction = async (id, action) => {
+    setActioning(id + action);
+    try {
+      const leave = pendingLeaves.find(l => l.id === id);
+      const stage = leave?.approvalStage || leave?.status;
 
-    console.log('Leave stage:', stage);
+      console.log('Leave stage:', stage);
 
-    if (stage === 'MANAGER_PENDING' || stage === 'PENDING') {
-      // Stage 1 — Manager action → forwards to HR
-      await managerAction(
-        id, action,
-        action === 'APPROVED'
-          ? 'Approved by Manager'
-          : 'Rejected by Manager'
-      );
-      toast.success(
-        action === 'APPROVED'
-          ? '✅ Forwarded to HR for verification!'
-          : '❌ Leave rejected!'
-      );
-    } else if (stage === 'HR_PENDING') {
-      // Stage 2 — HR action → final approval
-      await hrAction(
-        id, action,
-        action === 'APPROVED'
-          ? 'Approved by HR'
-          : 'Rejected by HR'
-      );
-      toast.success(
-        action === 'APPROVED'
-          ? '✅ Leave approved successfully!'
-          : '❌ Leave rejected!'
-      );
-    } else {
-      toast.error('Invalid leave stage: ' + stage);
+      if (stage === 'MANAGER_PENDING' || stage === 'PENDING') {
+        await managerAction(
+          id, action,
+          action === 'APPROVED'
+            ? 'Approved by Manager'
+            : 'Rejected by Manager'
+        );
+        toast.success(
+          action === 'APPROVED'
+            ? '✅ Forwarded to HR for verification!'
+            : '❌ Leave rejected!'
+        );
+      } else if (stage === 'HR_PENDING') {
+        await hrAction(
+          id, action,
+          action === 'APPROVED'
+            ? 'Approved by HR'
+            : 'Rejected by HR'
+        );
+        toast.success(
+          action === 'APPROVED'
+            ? '✅ Leave approved successfully!'
+            : '❌ Leave rejected!'
+        );
+      } else {
+        toast.error('Invalid leave stage: ' + stage);
+      }
+      fetchAll();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Action failed');
+    } finally {
+      setActioning(null);
     }
-    fetchAll();
-  } catch (err) {
-    toast.error(err.response?.data?.message || 'Action failed');
-  } finally {
-    setActioning(null);
-  }
-};
+  };
 
   const activeEmployees = employees.filter(e => e.active);
   const presentToday = todayAttendance.filter(a => a.status === 'PRESENT' || a.status === 'HALF_DAY').length;
@@ -252,7 +249,7 @@ const handleLeaveAction = async (id, action) => {
                           {l.leaveType} · {l.startDate} to {l.endDate} · {l.totalDays} day(s)
                         </div>
                       </div>
-                      <Badge status={l.status}/>
+                      <Badge status={l.status} />
                     </div>
                     <div style={{ fontSize: '12px', color: '#64748b', marginBottom: '10px', fontStyle: 'italic' }}>
                       &quot;{l.reason}&quot;
@@ -294,13 +291,21 @@ const handleLeaveAction = async (id, action) => {
 
             {/* Today's Attendance */}
             <div style={{ background: 'white', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', overflow: 'hidden' }}>
-              <div style={{ padding: '16px 20px', borderBottom: '1px solid #e2e8f0' }}>
-                <h3 style={{ fontSize: '15px', fontWeight: '700', color: '#1e293b' }}>
-                  📅 Today&apos;s Attendance
-                </h3>
-                <p style={{ fontSize: '12px', color: '#94a3b8', marginTop: '2px' }}>
-                  {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
-                </p>
+              <div style={{ padding: '16px 20px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div>
+                  <h3 style={{ fontSize: '15px', fontWeight: '700', color: '#1e293b' }}>
+                    📅 Today&apos;s Attendance
+                  </h3>
+                  <p style={{ fontSize: '12px', color: '#94a3b8', marginTop: '2px' }}>
+                    {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+                  </p>
+                </div>
+                <button
+                  onClick={() => router.push('/admin/attendance')}
+                  style={{ fontSize: '12px', color: '#3b82f6', fontWeight: '600', background: 'none', border: 'none', cursor: 'pointer' }}
+                >
+                  View All →
+                </button>
               </div>
 
               {todayAttendance.length === 0 ? (
@@ -333,7 +338,7 @@ const handleLeaveAction = async (id, action) => {
                           </div>
                         </div>
                       </div>
-                      <Badge status={a.status}/>
+                      <Badge status={a.status} />
                     </div>
                   ))}
                 </div>
@@ -353,7 +358,6 @@ const handleLeaveAction = async (id, action) => {
               </button>
             </div>
 
-            {/* Table Header & Rows */}
             <div className="table-responsive">
               <div className="admin-employees-table" style={{ minWidth: '680px' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '0.5fr 2fr 1.5fr 1.5fr 1fr 1fr', padding: '10px 20px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
@@ -400,7 +404,7 @@ const handleLeaveAction = async (id, action) => {
                       </span>
                     </div>
                     <div>
-                      <Badge status={e.active ? 'ACTIVE' : 'INACTIVE'}/>
+                      <Badge status={e.active ? 'ACTIVE' : 'INACTIVE'} />
                     </div>
                   </div>
                 ))}

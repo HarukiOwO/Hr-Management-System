@@ -8,14 +8,15 @@ import {
   deleteEmployee,
 } from '@/lib/adminApi';
 import toast from 'react-hot-toast';
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 function Badge({ status }) {
   const map = {
-    ACTIVE:    { bg: '#dcfce7', color: '#16a34a' },
-    INACTIVE:  { bg: '#fee2e2', color: '#dc2626' },
-    ADMIN:     { bg: '#dbeafe', color: '#1d4ed8' },
-    HR:        { bg: '#fdf4ff', color: '#9333ea' },
-    EMPLOYEE:  { bg: '#f1f5f9', color: '#374151' },
+    ACTIVE: { bg: '#dcfce7', color: '#16a34a' },
+    INACTIVE: { bg: '#fee2e2', color: '#dc2626' },
+    ADMIN: { bg: '#dbeafe', color: '#1d4ed8' },
+    HR: { bg: '#fdf4ff', color: '#9333ea' },
+    EMPLOYEE: { bg: '#f1f5f9', color: '#374151' },
   };
   const style = map[status] || { bg: '#f1f5f9', color: '#64748b' };
   return (
@@ -25,7 +26,16 @@ function Badge({ status }) {
   );
 }
 
-function InputField({ label, name, type = 'text', required, placeholder, value, onChange }) {
+function InputField({
+  label,
+  name,
+  type = 'text',
+  required,
+  placeholder,
+  value,
+  onChange,
+  max
+}) {
   return (
     <div>
       <label style={{ fontSize: '12px', fontWeight: '600', color: '#374151', display: 'block', marginBottom: '5px' }}>
@@ -37,10 +47,15 @@ function InputField({ label, name, type = 'text', required, placeholder, value, 
         onChange={e => onChange(name, e.target.value)}
         placeholder={placeholder}
         required={required}
+        max={max}   // <-- Add this line
         style={{
-          width: '100%', padding: '9px 12px',
-          border: '1.5px solid #e2e8f0', borderRadius: '8px',
-          fontSize: '13px', outline: 'none', boxSizing: 'border-box',
+          width: '100%',
+          padding: '9px 12px',
+          border: '1.5px solid #e2e8f0',
+          borderRadius: '8px',
+          fontSize: '13px',
+          outline: 'none',
+          boxSizing: 'border-box',
         }}
         onFocus={e => e.target.style.borderColor = '#3b82f6'}
         onBlur={e => e.target.style.borderColor = '#e2e8f0'}
@@ -50,7 +65,7 @@ function InputField({ label, name, type = 'text', required, placeholder, value, 
 }
 
 const EMPTY_FORM = {
-  firstName: '', lastName: '', email: '',
+  employeeId: "", firstName: '', lastName: '', email: '',
   password: '', phone: '', department: '',
   designation: '', basicSalary: '',
   dateOfJoining: '', dateOfBirth: '',
@@ -72,6 +87,7 @@ export default function EmployeeManagementPage() {
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const fetchEmployees = useCallback(async () => {
     setLoading(true);
@@ -126,6 +142,7 @@ export default function EmployeeManagementPage() {
     setEditMode(true);
     setEditId(emp.id);
     setForm({
+     employeeId: emp.employeeId || '',
       firstName: emp.firstName || '',
       lastName: emp.lastName || '',
       email: emp.email || '',
@@ -212,7 +229,7 @@ export default function EmployeeManagementPage() {
       <div style={{ position: 'relative', marginBottom: '20px', maxWidth: '400px' }}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2"
           style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }}>
-          <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+          <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
         </svg>
         <input
           value={search}
@@ -246,7 +263,7 @@ export default function EmployeeManagementPage() {
           padding: '10px 20px', background: '#f8fafc',
           borderBottom: '1px solid #e2e8f0',
         }}>
-          {['Code', 'Employee', 'Department', 'Designation', 'Role', 'Status', 'Actions'].map(h => (
+          {['Emp ID', 'Employee', 'Department', 'Designation', 'Role', 'Status', 'Actions'].map(h => (
             <div key={h} style={{ fontSize: '11px', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
               {h}
             </div>
@@ -306,8 +323,8 @@ export default function EmployeeManagementPage() {
 
                 <div style={{ fontSize: '13px', color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{emp.department || '—'}</div>
                 <div style={{ fontSize: '13px', color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{emp.designation || '—'}</div>
-                <Badge status={emp.role}/>
-                <Badge status={emp.active ? 'ACTIVE' : 'INACTIVE'}/>
+                <Badge status={emp.role} />
+                <Badge status={emp.active ? 'ACTIVE' : 'INACTIVE'} />
 
                 <div style={{ display: 'flex', gap: '6px' }}>
                   <button
@@ -327,7 +344,7 @@ export default function EmployeeManagementPage() {
                       borderRadius: '6px', fontSize: '11px', fontWeight: '700',
                       cursor: 'pointer',
                     }}
-                  >Del</button>
+                  >Delete</button>
                 </div>
               </div>
             ))}
@@ -376,16 +393,53 @@ export default function EmployeeManagementPage() {
 
             <form onSubmit={handleSubmit}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '14px' }}>
-                <InputField label="First Name" name="firstName" required placeholder="John" value={form.firstName} onChange={handleFieldChange}/>
-                <InputField label="Last Name" name="lastName" required placeholder="Doe" value={form.lastName} onChange={handleFieldChange}/>
-                <InputField label="Email" name="email" type="email" required placeholder="john@hrms.com" value={form.email} onChange={handleFieldChange}/>
-                <InputField label={editMode ? "Password (leave blank to keep)" : "Password"} name="password" type="password" required={!editMode} placeholder="Min 8 characters" value={form.password} onChange={handleFieldChange}/>
-                <InputField label="Phone" name="phone" placeholder="9876543210" value={form.phone} onChange={handleFieldChange}/>
-                <InputField label="Department" name="department" placeholder="Engineering" value={form.department} onChange={handleFieldChange}/>
-                <InputField label="Designation" name="designation" placeholder="Software Engineer" value={form.designation} onChange={handleFieldChange}/>
-                <InputField label="Basic Salary" name="basicSalary" type="number" placeholder="50000" value={form.basicSalary} onChange={handleFieldChange}/>
-                <InputField label="Date of Joining" name="dateOfJoining" type="date" value={form.dateOfJoining} onChange={handleFieldChange}/>
-                <InputField label="Date of Birth" name="dateOfBirth" type="date" value={form.dateOfBirth} onChange={handleFieldChange}/>
+                <InputField
+                  label="Employee ID"
+                  name="employeeId"
+                  required
+                  placeholder="EMP0004"
+                  value={form.employeeId}
+                  onChange={handleFieldChange}
+                />                <InputField label="First Name" name="firstName" required placeholder="John" value={form.firstName} onChange={handleFieldChange} />
+                <InputField label="Last Name" name="lastName" required placeholder="Doe" value={form.lastName} onChange={handleFieldChange} />
+                <InputField label="Email" name="email" type="email" required placeholder="john@hrms.com" value={form.email} onChange={handleFieldChange} />
+                <div style={{ position: "relative" }}>
+                  <InputField
+                    label={editMode ? "Password (leave blank to keep)" : "Password"}
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    required={!editMode}
+                    placeholder="Min 8 characters"
+                    value={form.password}
+                    onChange={handleFieldChange}
+                  />
+
+                  <span
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{
+                      position: "absolute",
+                      right: "12px",
+                      top: "38px",
+                      cursor: "pointer",
+                      color: "#64748b",
+                      fontSize: "16px"
+                    }}
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </span>
+                </div>                <InputField label="Phone" name="phone" placeholder="9876543210" value={form.phone} onChange={handleFieldChange} />
+                <InputField label="Department" name="department" placeholder="Engineering" value={form.department} onChange={handleFieldChange} />
+                <InputField label="Designation" name="designation" placeholder="Software Engineer" value={form.designation} onChange={handleFieldChange} />
+                <InputField label="Basic Salary" name="basicSalary" type="number" placeholder="50000" value={form.basicSalary} onChange={handleFieldChange} />
+                <InputField label="Date of Joining" name="dateOfJoining" type="date" value={form.dateOfJoining} onChange={handleFieldChange} />
+                <InputField
+                  label="Date of Birth"
+                  name="dateOfBirth"
+                  type="date"
+                  value={form.dateOfBirth}
+                  onChange={handleFieldChange}
+                  max={new Date().toISOString().split("T")[0]}
+                />
               </div>
 
               {/* Role */}
